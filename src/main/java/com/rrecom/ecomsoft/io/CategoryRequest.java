@@ -15,6 +15,4 @@ public class CategoryRequest {
     private String description;
     private String bgColor;
 
-    public Object getName() {
-    }
 }

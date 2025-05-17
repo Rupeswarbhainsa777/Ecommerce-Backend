@@ -9,12 +9,11 @@ import java.sql.Timestamp;
 @Data
 @Builder
 public class CategoryResponse {
-    private  String CategoryId;
+    private  String categoryId;
     private String name;
     private String description;
     private String bgColor;
     private Timestamp createdAt;
-
     private Timestamp updateAt;
-//    private  String imgUrl;
+    private  String imgUrl;
 }
