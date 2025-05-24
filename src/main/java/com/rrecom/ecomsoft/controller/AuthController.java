@@ -7,6 +7,7 @@ import com.rrecom.ecomsoft.service.UserService;
 import com.rrecom.ecomsoft.service.imp.AppUserDeatilsService;
 import com.rrecom.ecomsoft.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -42,7 +43,7 @@ public class AuthController
                   final  String    jwtToken =   jwtUtil.generateToken(userDetails);
               String role = userService.getUserRole(request.getEmail());
 
-               return  new AuthResponse(request.getEmail(),role,jwtToken);
+               return  new AuthResponse(request.getEmail(),jwtToken,role);
 
 
 
