@@ -4,6 +4,7 @@ import com.rrecom.ecomsoft.entity.CategoryEntity;
 import com.rrecom.ecomsoft.io.CategoryRequest;
 import com.rrecom.ecomsoft.io.CategoryResponse;
 import com.rrecom.ecomsoft.repository.CategoryRepository;
+import com.rrecom.ecomsoft.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.rrecom.ecomsoft.service.CategoryService;
@@ -17,6 +18,14 @@ import java.util.stream.Collectors;
 public class CategoryServiceImp implements CategoryService {
 
     private  final CategoryRepository categoryRepository;
+     private final ItemRepository itemRepository;
+
+
+
+
+
+
+
 
     @Override
     public CategoryResponse add(CategoryRequest request){
@@ -60,7 +69,7 @@ public class CategoryServiceImp implements CategoryService {
 
 
     private CategoryResponse convertToResponse(CategoryEntity newCategory) {
-
+      Integer itemCount=   itemRepository.countByCategoryId(newCategory.getId());
       return   CategoryResponse.builder().categoryId(newCategory.getCategoryId())
                 .name(newCategory.getName())
                 .description(newCategory.getDescription())
@@ -68,6 +77,7 @@ public class CategoryServiceImp implements CategoryService {
               .imgUrl(newCategory.getImgUrl())
               .createdAt(newCategory.getCreatedAt())
               .updateAt(newCategory.getUpdatedAt())
+              .items(itemCount)
                 .build();
     }
 

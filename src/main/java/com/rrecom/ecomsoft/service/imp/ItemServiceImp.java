@@ -1,0 +1,90 @@
+package com.rrecom.ecomsoft.service.imp;
+
+
+import com.rrecom.ecomsoft.entity.CategoryEntity;
+import com.rrecom.ecomsoft.entity.ItemEntity;
+import com.rrecom.ecomsoft.io.ItemRequest;
+import com.rrecom.ecomsoft.io.ItemResponse;
+import com.rrecom.ecomsoft.repository.CategoryRepository;
+import com.rrecom.ecomsoft.repository.ItemRepository;
+import com.rrecom.ecomsoft.service.ItemService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class ItemServiceImp implements ItemService {
+
+    private final FileUplploadeService fileUplploadeService;
+    private final CategoryRepository categoryRepository;
+    private final ItemRepository itemRepository;
+
+    @Override
+    public ItemResponse add(ItemRequest request, MultipartFile file) {
+        String imaUrl  =fileUplploadeService.upLoadFile(file);
+
+        ItemEntity newItem = convertToEntity(request);
+        CategoryEntity existingCategory = categoryRepository.findByCategoryId(request.getCategoryId())
+                .orElseThrow(() -> new RuntimeException("Category not found:" + request.getCategoryId()));
+        newItem.setCategory(existingCategory);
+
+
+        newItem.setImgUrl(imaUrl);
+        newItem = itemRepository.save(newItem);
+        return convertToResponse(newItem);
+    }
+
+    private ItemEntity convertToEntity(ItemRequest request)
+    {
+      return   ItemEntity.builder()
+                .itemId(UUID.randomUUID().toString())
+                .name(request.getName())
+                .description(request.getDescription())
+                .price(request.getPrice())
+                .build();
+    }
+
+    private ItemResponse convertToResponse(ItemEntity newItem)
+    {
+      return   ItemResponse.builder()
+                .itemId(newItem.getItemId())
+                .name(newItem.getName())
+                .price(newItem.getPrice())
+                .imgUrl(newItem.getImgUrl())
+                .categoryName(newItem.getCategory().getName())
+                .categoryId(newItem.getCategory().getCategoryId())
+                .createdAt(newItem.getCreatedAt())
+                .updatedAt(newItem.getUpdatedAt())
+                .build();
+    }
+
+    @Override
+    public List<ItemResponse> fetchItems() {
+     return   itemRepository.findAll()
+               .stream()
+               .map(itemEntity -> convertToResponse(itemEntity))
+               .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteItem(String itemId)
+    {
+ItemEntity existingItem = itemRepository.findByItemId(itemId)
+        .orElseThrow(()->new RuntimeException("Item not found"+itemId));
+           boolean isFileDeleted =   fileUplploadeService.deliteFile(existingItem.getImgUrl());
+           if(isFileDeleted)
+           {
+               itemRepository.delete(existingItem);
+           }
+           else {
+               throw  new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,"Unable to delete the image");
+           }
+    }
+}
