@@ -1,5 +1,7 @@
 package com.rrecom.ecomsoft.io;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Lob;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,7 +23,9 @@ public class ItemResponse
     private String categoryId;
     private String description;
     private String categoryName;
-    private String imgUrl;
+    @Lob
+    @Column(columnDefinition = "LONGBLOB")
+    private byte[] imgUrl;
     private Timestamp createdAt;
     private Timestamp updatedAt;
 }

@@ -2,6 +2,8 @@ package com.rrecom.ecomsoft.io;
 
 
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Lob;
 import lombok.Builder;
 import lombok.Data;
 
@@ -15,6 +17,8 @@ public class CategoryResponse {
     private String bgColor;
     private Timestamp createdAt;
     private Timestamp updateAt;
-    private  String imgUrl;
+    @Lob
+    @Column(columnDefinition = "LONGBLOB")
+    private byte[] imgUrl;
     private Integer items;
 }

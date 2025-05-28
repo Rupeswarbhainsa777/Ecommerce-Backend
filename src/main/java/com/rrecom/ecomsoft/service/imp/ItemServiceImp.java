@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -22,24 +23,31 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ItemServiceImp implements ItemService {
 
-    private final FileUplploadeService fileUplploadeService;
+
     private final CategoryRepository categoryRepository;
     private final ItemRepository itemRepository;
 
     @Override
     public ItemResponse add(ItemRequest request, MultipartFile file) {
-        String imaUrl  =fileUplploadeService.upLoadFile(file);
-
         ItemEntity newItem = convertToEntity(request);
+
         CategoryEntity existingCategory = categoryRepository.findByCategoryId(request.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Category not found:" + request.getCategoryId()));
+                .orElseThrow(() -> new RuntimeException("Category not found: " + request.getCategoryId()));
         newItem.setCategory(existingCategory);
 
+        try {
+            if (file != null && !file.isEmpty()) {
+                // Convert MultipartFile to byte[] and set to imgUrl
+                newItem.setImgUrl(file.getBytes());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read image file", e);
+        }
 
-        newItem.setImgUrl(imaUrl);
         newItem = itemRepository.save(newItem);
         return convertToResponse(newItem);
     }
+
 
     private ItemEntity convertToEntity(ItemRequest request)
     {
@@ -73,18 +81,18 @@ public class ItemServiceImp implements ItemService {
                .collect(Collectors.toList());
     }
 
-    @Override
-    public void deleteItem(String itemId)
-    {
-ItemEntity existingItem = itemRepository.findByItemId(itemId)
-        .orElseThrow(()->new RuntimeException("Item not found"+itemId));
-           boolean isFileDeleted =   fileUplploadeService.deliteFile(existingItem.getImgUrl());
-           if(isFileDeleted)
-           {
-               itemRepository.delete(existingItem);
-           }
-           else {
-               throw  new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,"Unable to delete the image");
-           }
-    }
+//    @Override
+//    public void deleteItem(String itemId)
+//    {
+//         ItemEntity existingItem = itemRepository.findByItemId(itemId)
+//        .orElseThrow(()->new RuntimeException("Item not found"+itemId));
+//           boolean isFileDeleted =   fileUplploadeService.deliteFile(existingItem.getImgUrl());
+//           if(isFileDeleted)
+//           {
+//               itemRepository.delete(existingItem);
+//           }
+//           else {
+//               throw  new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,"Unable to delete the image");
+//           }
+//    }
 }

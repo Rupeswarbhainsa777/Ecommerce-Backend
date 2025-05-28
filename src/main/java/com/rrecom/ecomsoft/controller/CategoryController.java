@@ -1,12 +1,14 @@
 package com.rrecom.ecomsoft.controller;
 
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rrecom.ecomsoft.io.CategoryRequest;
 import com.rrecom.ecomsoft.io.CategoryResponse;
 import com.rrecom.ecomsoft.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -16,34 +18,42 @@ import java.util.List;
 public class CategoryController {
 
     private final CategoryService categoryService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-   @PostMapping("/admin/categories")
-   @ResponseStatus(HttpStatus.CREATED)
-    public CategoryResponse addCategory(@RequestBody CategoryRequest request)
-   {
-         return   categoryService.add(request);
-   }
+    @PostMapping("/admin/categories")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CategoryResponse addCategory(
+            @RequestPart("category") String categoryString,
+            @RequestPart(value = "file", required = false) MultipartFile file
+    ) {
+        try {
+            CategoryRequest request = objectMapper.readValue(categoryString, CategoryRequest.class);
+            return categoryService.add(request, file);
+        } catch (JsonProcessingException ex) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Failed to parse JSON: " + ex.getOriginalMessage(),
+                    ex
+            );
+        }
+    }
 
-    @GetMapping
-   public List<CategoryResponse> fetchCategories(){
-     return   categoryService.read();
-   }
-  @ResponseStatus(HttpStatus.NOT_FOUND)
-   @DeleteMapping("/admin/categories/{categoryId}")
-  public  void remove(@PathVariable String categoryId)
-  {
-      try {
-          categoryService.delete(categoryId);
+    @GetMapping("/categories") // Fixed missing path
+    public List<CategoryResponse> fetchCategories() {
+        return categoryService.read();
+    }
 
-      }
-      catch (Exception e)
-      {
-          throw  new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,e.getMessage());
-
-      }
-
-  }
-
-
-
+    @DeleteMapping("/admin/categories/{categoryId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void remove(@PathVariable String categoryId) {
+        try {
+            categoryService.delete(categoryId);
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_ACCEPTABLE,
+                    "Category deletion failed: " + e.getMessage(),
+                    e
+            );
+        }
+    }
 }

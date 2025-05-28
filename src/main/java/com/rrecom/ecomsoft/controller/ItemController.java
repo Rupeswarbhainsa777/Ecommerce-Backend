@@ -43,18 +43,18 @@ public class ItemController {
     {
         return itemService.fetchItems();
     }
-
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("/admin/items{itemId}")
-    public  void removeItem(@PathVariable String itemId)
-    {
-         try {
-             itemService.deleteItem(itemId);
-         }
-         catch (Exception e)
-         {
-             throw  new ResponseStatusException(HttpStatus.NOT_FOUND,"Item not found");
-
-         }
-    }
+//
+//    @ResponseStatus(HttpStatus.NO_CONTENT)
+//    @DeleteMapping("/admin/items{itemId}")
+//    public  void removeItem(@PathVariable String itemId)
+//    {
+//         try {
+//             itemService.deleteItem(itemId);
+//         }
+//         catch (Exception e)
+//         {
+//             throw  new ResponseStatusException(HttpStatus.NOT_FOUND,"Item not found");
+//
+//         }
+//    }
 }

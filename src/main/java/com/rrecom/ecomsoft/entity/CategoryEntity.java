@@ -30,7 +30,9 @@ public class CategoryEntity {
 
     private String bgColor;
 
-    private String imgUrl;
+    @Lob
+    @Column(columnDefinition = "LONGBLOB")
+    private byte []   imgUrl;
 
     @CreationTimestamp
     @Column(updatable = false)

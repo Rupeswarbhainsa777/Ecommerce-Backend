@@ -8,6 +8,7 @@ import com.rrecom.ecomsoft.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.rrecom.ecomsoft.service.CategoryService;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -20,15 +21,8 @@ public class CategoryServiceImp implements CategoryService {
     private  final CategoryRepository categoryRepository;
      private final ItemRepository itemRepository;
 
-
-
-
-
-
-
-
     @Override
-    public CategoryResponse add(CategoryRequest request){
+    public CategoryResponse add(CategoryRequest request, MultipartFile file){
     CategoryEntity newCategory = convertToEntity(request);
             newCategory= categoryRepository.save(newCategory);
        return convertToResponse(newCategory);
