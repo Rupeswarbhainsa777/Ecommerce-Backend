@@ -81,18 +81,11 @@ public class ItemServiceImp implements ItemService {
                .collect(Collectors.toList());
     }
 
-//    @Override
-//    public void deleteItem(String itemId)
-//    {
-//         ItemEntity existingItem = itemRepository.findByItemId(itemId)
-//        .orElseThrow(()->new RuntimeException("Item not found"+itemId));
-//           boolean isFileDeleted =   fileUplploadeService.deliteFile(existingItem.getImgUrl());
-//           if(isFileDeleted)
-//           {
-//               itemRepository.delete(existingItem);
-//           }
-//           else {
-//               throw  new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,"Unable to delete the image");
-//           }
-//    }
+    @Override
+    public void deleteItem(String itemId) {
+        ItemEntity item = itemRepository.findByItemId(itemId)
+                .orElseThrow(() -> new RuntimeException("Item not found: " + itemId));
+        itemRepository.delete(item);
+    }
+
 }

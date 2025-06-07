@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-
+@CrossOrigin
 @RestController
 @RequiredArgsConstructor
 public class ItemController {
@@ -43,18 +43,16 @@ public class ItemController {
     {
         return itemService.fetchItems();
     }
-//
-//    @ResponseStatus(HttpStatus.NO_CONTENT)
-//    @DeleteMapping("/admin/items{itemId}")
-//    public  void removeItem(@PathVariable String itemId)
-//    {
-//         try {
-//             itemService.deleteItem(itemId);
-//         }
-//         catch (Exception e)
-//         {
-//             throw  new ResponseStatusException(HttpStatus.NOT_FOUND,"Item not found");
-//
-//         }
-//    }
+
+
+
+    @DeleteMapping("/admin/items/{itemId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteItem(@PathVariable String itemId) {
+        try {
+            itemService.deleteItem(itemId);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Item not found: " + itemId);
+        }
+    }
 }

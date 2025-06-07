@@ -1,8 +1,6 @@
 package com.rrecom.ecomsoft.util;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -47,10 +45,33 @@ public class JwtUtil {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parser()
-                .setSigningKey(SECRET_KEY)
-                .parseClaimsJws(token)
-                .getBody();
+
+
+        try {
+            if (token == null || token.split("\\.").length != 3) {
+                throw new MalformedJwtException("Invalid JWT format: " + token);
+            }
+
+            return Jwts.parser()
+                    .setSigningKey(SECRET_KEY)
+                    .parseClaimsJws(token)
+                    .getBody();
+
+        } catch (ExpiredJwtException e) {
+            throw new RuntimeException("JWT expired", e);
+        } catch (MalformedJwtException e) {
+            throw new RuntimeException("Invalid JWT format", e);
+        } catch (SignatureException e) {
+            throw new RuntimeException("JWT signature mismatch", e);
+        } catch (Exception e) {
+            throw new RuntimeException("JWT parsing failed", e);
+        }
+
+
+//        return Jwts.parser()
+//                .setSigningKey(SECRET_KEY)
+//                .parseClaimsJws(token)
+//                .getBody();
     }
 
     private Boolean isTokenExpired(String token) {
