@@ -39,9 +39,8 @@ public class ItemEntity {
     @UpdateTimestamp
     private Timestamp updatedAt;
 
-    @Lob
-    @Column(columnDefinition = "LONGBLOB")
-    private byte[] imgUrl;
+
+    private String imgUrl;
 
     @ManyToOne
     @JoinColumn(name = "category_id",nullable = false)

@@ -17,24 +17,24 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CategoryController {
 
-    private final CategoryService categoryService;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private  final CategoryService categoryService;
 
     @PostMapping("/admin/categories")
     @ResponseStatus(HttpStatus.CREATED)
     public CategoryResponse addCategory(
             @RequestPart("category") String categoryString,
-            @RequestPart(value = "file", required = false) MultipartFile file
+            @RequestPart("file") MultipartFile file
     ) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        CategoryRequest request = null;
         try {
-            CategoryRequest request = objectMapper.readValue(categoryString, CategoryRequest.class);
+            request =objectMapper.readValue(categoryString,CategoryRequest.class);
             return categoryService.add(request, file);
-        } catch (JsonProcessingException ex) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Failed to parse JSON: " + ex.getOriginalMessage(),
-                    ex
-            );
+        }
+        catch (Exception ex)
+        {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Exception occred while passing the json ");
+
         }
     }
 

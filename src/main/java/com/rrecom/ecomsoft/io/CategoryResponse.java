@@ -17,8 +17,7 @@ public class CategoryResponse {
     private String bgColor;
     private Timestamp createdAt;
     private Timestamp updateAt;
-    @Lob
-    @Column(columnDefinition = "LONGBLOB")
-    private byte[] imgUrl;
+
+    private String imgUrl;
     private Integer items;
 }

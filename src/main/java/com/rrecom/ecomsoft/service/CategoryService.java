@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface CategoryService {
 
-    CategoryResponse add(CategoryRequest request, MultipartFile file);
+    CategoryResponse add(CategoryRequest request, MultipartFile file) throws Exception;
 
     List<CategoryResponse> read();
 
