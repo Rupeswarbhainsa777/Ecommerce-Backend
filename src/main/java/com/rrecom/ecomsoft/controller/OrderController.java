@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/orders")
 @RequiredArgsConstructor
@@ -30,6 +32,7 @@ public class OrderController {
         orderService.deleteOrder(orderId);
 
     }
+
    @GetMapping("/latest")
     public List<OrderResponse> getLatestOrders()
     {
